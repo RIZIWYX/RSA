@@ -1,0 +1,5 @@
+(executable
+ (name main)
+ (libraries r_gauss  q_poly)
+ (flags (:standard -warn-error -33))
+)

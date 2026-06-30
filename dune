@@ -1,0 +1,4 @@
+(library
+ (name algebre_effective)
+ (public_name alg_effect)
+)

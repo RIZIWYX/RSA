@@ -1,0 +1,41 @@
+# Dune build artifacts
+_build/
+*.install
+
+# OCaml bytecode / native binaries
+*.cmi
+*.cmo
+*.cmx
+*.cma
+*.cmxa
+*.o
+*.a
+*.so
+*.exe
+
+# Merlin cache
+.merlin
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+*.out
+
+# opam local switches
+_opam/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

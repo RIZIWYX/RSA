@@ -1,0 +1,5 @@
+(library
+ (name e_gauss)
+ (libraries zarith)
+ (public_name e_gauss)
+)

@@ -1,0 +1,5 @@
+(library
+ (name q_poly)
+ (libraries zarith)
+ (public_name q_poly)
+)
