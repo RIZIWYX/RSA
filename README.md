@@ -93,6 +93,10 @@ dune exec test/main.exe
 
 Projet réalisé dans le cadre de l'UE d'**Algèbre effective** en L2 Informatique à l'Université de Rouen Normandie. Le sujet original est inclus dans [`q_poly/sujet_projet.pdf`](q_poly/sujet_projet.pdf).
 
+## 👥 Auteurs
+
+Rayane Graïne et Accyl Benadjaoud, L2 Informatique, Université de Rouen Normandie.
+
 ## 📄 Licence
 
 Code académique fourni à titre éducatif.
