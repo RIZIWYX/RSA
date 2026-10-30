@@ -1,5 +1,5 @@
-(executable
- (name main)
- (libraries r_gauss  q_poly)
- (flags (:standard -warn-error -33))
-)
+(executables
+ (names main test_arith)
+ (libraries r_gauss q_poly crypto_jouet)
+ (flags
+  (:standard -warn-error -33)))
