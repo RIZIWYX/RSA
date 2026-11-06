@@ -1,4 +1,3 @@
-open R_gauss
 open Q_poly
 
 (* ============================================================
@@ -249,4 +248,6 @@ let () =
   ) cases;
   print_sep ()
 
+  let () = Test_rsa.run ()
+  
 (* dune exec test/main.exe *)

@@ -1,79 +1,65 @@
-# Algèbre effective en OCaml, vers un RSA jouet
+# Algèbre effective et RSA pédagogique en OCaml
 
-[![CI](https://github.com/RIZIWYX/RSA/actions/workflows/ci.yml/badge.svg)](https://github.com/RIZIWYX/RSA/actions/workflows/ci.yml)
-![OCaml](https://img.shields.io/badge/OCaml-%E2%89%A5%204.14-orange)
-![zarith](https://img.shields.io/badge/calcul-exact%20(zarith)-blue)
-[![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
+![CI](https://github.com/RIZIWYX/algebre-effective/actions/workflows/ci.yml/badge.svg)
 
-Bibliothèque OCaml d'**algèbre symbolique** réalisée en L2 Informatique (Université de Rouen Normandie) : entiers et rationnels de Gauss, polynômes à coefficients rationnels, interpolation de Newton et développement de Taylor de fractions rationnelles.
+Bibliothèque OCaml d'**arithmétique exacte** (entiers et rationnels de Gauss, polynômes rationnels), étendue en **projet de cryptographie pédagogique** : un RSA jouet écrit à partir de zéro, destiné à être attaqué sur de petites clés.
 
-Toute l'arithmétique repose sur [`zarith`](https://github.com/ocaml/Zarith), qui calcule **exactement** sur des entiers et des rationnels de taille arbitraire : pas de flottants, donc aucune erreur d'arrondi.
+Toute l'arithmétique repose sur [`zarith`](https://github.com/ocaml/Zarith), qui fournit des entiers et des rationnels de taille arbitraire. Il n'y a aucun calcul flottant, donc aucune erreur d'arrondi.
 
-Le projet est en train d'être étendu en **RSA jouet** : génération de clés, chiffrement, puis attaques sur de petites clés pour montrer pourquoi la vraie cryptographie utilise de grandes clés et du padding.
-
-## État du projet
-
-| Partie | État | Branche |
-|---|---|---|
-| Algèbre effective (`e_gauss`, `r_gauss`, `q_poly`) | Terminé | `main` |
-| Briques arithmétiques : Euclide étendu, inverse et exponentiation modulaires | Fait, avec tests | [`rsa-jouet`](https://github.com/RIZIWYX/RSA/tree/rsa-jouet) |
-| Tests de primalité (Miller-Rabin) et génération de premiers | À venir | `rsa-jouet` |
-| RSA : clés, chiffrement, déchiffrement | À venir | `rsa-jouet` |
-| Attaques : divisions successives, Fermat, Pollard rho, petit exposant | À venir | `rsa-jouet` |
-
-La feuille de route complète est dans [`ROADMAP.md`](https://github.com/RIZIWYX/RSA/blob/rsa-jouet/ROADMAP.md), sur la branche `rsa-jouet`. Le RSA rejoindra `main` une fois terminé.
-
-> RSA jouet = projet pédagogique. Les clés sont volontairement petites et il n'y a pas de padding : ce code ne doit pas servir à protéger de vraies données.
+> **Projet pédagogique.** La partie cryptographique utilise de petites clés, aucun padding et un générateur aléatoire non sûr. Elle sert à comprendre RSA et ses faiblesses, **pas** à protéger des données réelles. Voir [Limites](#limites).
 
 ## Architecture
 
-Le projet est organisé en **trois bibliothèques** + **un binaire de test**, gérés par [`dune`](https://dune.build/).
-
 ```
-RSA/
-├── e_gauss/       # ℤ[i] — entiers de Gauss
-├── r_gauss/       # ℚ[i] — rationnels de Gauss
-├── q_poly/        # ℚ[X] — polynômes à coefficients rationnels
-└── test/          # binaire de démonstration
+algebre_effective/
+├── e_gauss/        # Z[i] : entiers de Gauss
+├── r_gauss/        # Q[i] : rationnels de Gauss
+├── q_poly/         # Q[X] : polynômes à coefficients rationnels
+├── crypto_jouet/   # cryptographie pédagogique
+│   ├── arith       #   Euclide étendu, inverse et exponentiation modulaires
+│   ├── premiers    #   Miller-Rabin, génération de nombres premiers
+│   └── rsa         #   génération de clés, chiffrement, déchiffrement
+└── test/           # tests et démonstrations
 ```
 
-| Module    | Description                                                          | LOC |
-|-----------|----------------------------------------------------------------------|-----|
-| `e_gauss` | Entiers de Gauss ℤ[i] : addition, multiplication, conjugué, norme    | 153 |
-| `r_gauss` | Rationnels de Gauss ℚ[i] : extension de `e_gauss` aux complexes ℚ    | 182 |
-| `q_poly`  | Polynômes ℚ[X] en représentation creuse + algorithmes du sujet       | 566 |
-| `test`    | Démonstrations et tests des fonctions implémentées                   | 251 |
+Chaque module expose une interface `.mli` documentée. Les dépendances suivent l'ordre `arith` → `premiers` → `rsa`.
 
-## Fonctionnalités principales
+## Fonctionnalités
 
-### `e_gauss` — Entiers de Gauss ℤ[i]
-- Types et constantes : `zero`, `one`, `i`, `minus_one`, `minus_i`
-- Parties réelle / imaginaire, conjugué, norme
-- Addition, soustraction, multiplication
-- Conversions et affichage
+### Algèbre (partie L2)
 
-### `r_gauss` — Rationnels de Gauss ℚ[i]
-- Mêmes opérations que `e_gauss` étendues aux rationnels
-- Division (corps des fractions)
-- Inverse multiplicatif
+**`e_gauss`** : entiers de Gauss Z[i]. Constantes, parties réelle et imaginaire, conjugué, norme, addition, soustraction, multiplication, puissance, conversions.
 
-### `q_poly` — Polynômes ℚ[X]
-Représentation **creuse** : un polynôme = liste `(degré, coefficient)` triée, sans coefficients nuls.
+**`r_gauss`** : rationnels de Gauss Q[i]. Mêmes opérations que `e_gauss`, plus la division et l'inverse.
 
-**Opérations classiques :**
-- Construction, normalisation (`purge`), accès par degré, degré, coefficient dominant
-- Arithmétique : `add`, `sub`, `mult_naive`, `mult`, `mult_coeff`, `mult_monome`
-- Division euclidienne : `quotient`, `reste`, `modulo`
-- Évaluation, dérivée, élévation à une puissance
-- Inversion modulaire (`inverse_mod`)
+**`q_poly`** : polynômes Q[X] en représentation creuse (liste triée de couples `(degré, coefficient)`).
+- Arithmétique, division euclidienne, évaluation, dérivée, puissance, inverse modulaire.
+- Opérateur de différence finie Δ et ses itérés.
+- Interpolation de Newton sur la grille des entiers.
+- Développement de Taylor de fractions rationnelles P/Q, par méthode directe et par méthode de Newton.
 
-**Algorithmes avancés (projet) :**
-- Opérateur **différence finie** `Δ` et ses itérés `Δⁿ`
-- **Interpolation de Newton** sur la grille des entiers (`interpol_newton`)
-- Méthode des différences finies pour la prédiction de suites
-- **Développement de Taylor de fractions rationnelles** P/Q à l'ordre `n`, par deux méthodes :
-  - Méthode directe (sommation des dérivées en 0)
-  - Méthode de Newton (inversion modulaire du dénominateur)
+### Cryptographie pédagogique (`crypto_jouet`)
+
+**`arith`** : briques arithmétiques, écrites sans utiliser les fonctions toutes faites de zarith.
+- `gcd_ext` : algorithme d'Euclide étendu (coefficients de Bézout).
+- `inv_mod` : inverse modulaire.
+- `pow_mod` : exponentiation modulaire rapide (square-and-multiply), en O(log e) multiplications.
+
+**`premiers`** : nombres premiers.
+- `miller_rabin` : test de primalité probabiliste, avec une erreur inférieure à 4^(-k) pour k témoins.
+- `est_premier` : test complet (petits cas puis Miller-Rabin).
+- `premier_aleatoire` : génération d'un premier de taille exacte.
+
+**`rsa`** : RSA « manuel » (textbook RSA).
+- `generer` : paire de clés avec e = 65537 et d = e⁻¹ mod φ(n).
+- `chiffrer` / `dechiffrer` : c = m^e mod n et m = c^d mod n.
+- `encoder` / `decoder` : conversion texte ↔ entier (octets en base 256).
+
+### En cours
+
+- Attaques sur petites clés : divisions successives, méthode de Fermat, Pollard rho, avec mesure du temps en fonction de la taille du module.
+- Attaque à petit exposant public sans padding, et explication du rôle d'OAEP.
+- Partage de secret de Shamir par interpolation sur Z/pZ.
 
 ## Compilation et exécution
 
@@ -83,43 +69,59 @@ Représentation **creuse** : un polynôme = liste `(degré, coefficient)` triée
 - [`dune`](https://dune.build/) ≥ 3.17
 - [`zarith`](https://github.com/ocaml/Zarith)
 
-Installation des dépendances via `opam` :
-
 ```bash
 opam install dune zarith
 ```
 
-### Build
-
-À la racine du projet :
+### Build et tests
 
 ```bash
 dune build
-```
-
-### Exécution des tests / démos
-
-```bash
 dune exec test/main.exe
 ```
 
-Le programme passe en revue les fonctions de `q_poly` (puissances, différences finies, interpolation de Newton, développements de Taylor) et affiche pour chacune le résultat attendu à côté du résultat obtenu. La CI compile le projet et lance ce programme à chaque push.
+Les tests comparent les fonctions écrites à la main avec celles de zarith (`Z.gcdext`, `Z.invert`, `Z.powm`, `Z.probab_prime`) sur des centaines d'entrées aléatoires, avec une graine fixe pour que les résultats soient reproductibles. Ils sont aussi lancés automatiquement par GitHub Actions à chaque push.
+
+## Exemple
+
+```ocaml
+open Crypto_jouet
+
+let () =
+  let (pub, priv) = Rsa.generer 64 in
+  let m = Rsa.encoder "Bonjour" in
+  let c = Rsa.chiffrer pub m in
+  print_endline (Rsa.decoder (Rsa.dechiffrer priv c))   (* Bonjour *)
+```
 
 ## Choix techniques
 
-- **Représentation creuse des polynômes** : `(int * Q.t) list` triée par degré croissant. Évite de stocker les coefficients nuls et accélère les opérations sur les polynômes peu denses.
-- **Arithmétique exacte** : grâce à `zarith`, tous les calculs sont exacts, sans aucune perte de précision. Indispensable en algèbre symbolique.
-- **Séparation interface / implémentation** : chaque bibliothèque expose une interface (`.mli`) documentée. Ça permet de vérifier les invariants à la compilation et facilite la maintenance.
-- **Build hermétique avec `dune`** : reproductible, sans aucune configuration manuelle.
+- **Arithmétique exacte** avec zarith : indispensable en algèbre symbolique comme en cryptographie.
+- **Représentation creuse des polynômes** : on ne stocke pas les coefficients nuls.
+- **Séparation interface / implémentation** : chaque `.mli` fixe un contrat (préconditions, résultat, exceptions), vérifié par les tests.
+- **Tests par oracle** : les implémentations maison sont comparées à zarith.
+- **Build reproductible** avec dune et intégration continue avec GitHub Actions.
 
-## Contexte académique
+## Limites
 
-Projet réalisé dans le cadre de l'UE d'**Algèbre effective** en L2 Informatique à l'Université de Rouen Normandie. Le sujet original est inclus dans [`q_poly/sujet_projet.pdf`](q_poly/sujet_projet.pdf).
+Ce projet **ne doit pas être utilisé pour protéger des données** :
+
+- clés de quelques dizaines de bits, cassables en quelques secondes ;
+- RSA sans padding, donc déterministe et malléable ;
+- générateur `Random` d'OCaml, prévisible et non cryptographique ;
+- calculs en temps non constant, donc vulnérables aux attaques par canaux auxiliaires.
+
+Pour un usage réel, il faut une bibliothèque éprouvée (par exemple [`mirage-crypto`](https://github.com/mirage/mirage-crypto)).
+
+## Contexte
+
+La partie algèbre a été réalisée dans le cadre de l'UE d'Algèbre effective en L2 Informatique à l'Université de Rouen Normandie. Le sujet original est dans [`q_poly/sujet_projet.pdf`](q_poly/sujet_projet.pdf). La partie cryptographique est une extension personnelle du projet.
 
 ## Auteurs
 
-Rayane Graïne et Accyl Benadjaoud, L2 Informatique, Université de Rouen Normandie.
+- Rayane Graïne ([@RIZIWYX](https://github.com/RIZIWYX))
+- Accyl Benadjaoud ([@Aksil1vgb](https://github.com/Aksil1vgb))
 
 ## Licence
 
-Distribué sous licence **MIT**. Voir le fichier [`LICENSE`](LICENSE).
+Distribué sous licence MIT. Voir [`LICENSE`](LICENSE).
