@@ -1,6 +1,6 @@
 # Algèbre effective et RSA pédagogique en OCaml
 
-![CI](https://github.com/RIZIWYX/algebre-effective/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/RIZIWYX/RSA/actions/workflows/ci.yml/badge.svg)
 
 Bibliothèque OCaml d'**arithmétique exacte** (entiers et rationnels de Gauss, polynômes rationnels), étendue en **projet de cryptographie pédagogique** : un RSA jouet écrit à partir de zéro, destiné à être attaqué sur de petites clés.
 
@@ -33,6 +33,7 @@ Chaque module expose une interface `.mli` documentée. Les dépendances suivent 
 **`r_gauss`** : rationnels de Gauss Q[i]. Mêmes opérations que `e_gauss`, plus la division et l'inverse.
 
 **`q_poly`** : polynômes Q[X] en représentation creuse (liste triée de couples `(degré, coefficient)`).
+
 - Arithmétique, division euclidienne, évaluation, dérivée, puissance, inverse modulaire.
 - Opérateur de différence finie Δ et ses itérés.
 - Interpolation de Newton sur la grille des entiers.
@@ -41,16 +42,19 @@ Chaque module expose une interface `.mli` documentée. Les dépendances suivent 
 ### Cryptographie pédagogique (`crypto_jouet`)
 
 **`arith`** : briques arithmétiques, écrites sans utiliser les fonctions toutes faites de zarith.
+
 - `gcd_ext` : algorithme d'Euclide étendu (coefficients de Bézout).
 - `inv_mod` : inverse modulaire.
 - `pow_mod` : exponentiation modulaire rapide (square-and-multiply), en O(log e) multiplications.
 
 **`premiers`** : nombres premiers.
+
 - `miller_rabin` : test de primalité probabiliste, avec une erreur inférieure à 4^(-k) pour k témoins.
 - `est_premier` : test complet (petits cas puis Miller-Rabin).
 - `premier_aleatoire` : génération d'un premier de taille exacte.
 
 **`rsa`** : RSA « manuel » (textbook RSA).
+
 - `generer` : paire de clés avec e = 65537 et d = e⁻¹ mod φ(n).
 - `chiffrer` / `dechiffrer` : c = m^e mod n et m = c^d mod n.
 - `encoder` / `decoder` : conversion texte ↔ entier (octets en base 256).
