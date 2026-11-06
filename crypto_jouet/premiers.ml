@@ -49,3 +49,14 @@ let est_premier n =
       else essaie reste
   in
   if Z.lt n (Z.of_int 2) then false else essaie petits_premiers
+
+let premier_aleatoire (bits : int) : Z.t =
+  if bits < 2 then invalid_arg "premier_aleatoire: bits < 2";
+  let bit_fort = Z.shift_left Z.one (bits - 1) in
+  let rec essai () =
+    let x = Z.random_bits bits in
+    let x = Z.logor x bit_fort in
+    let x = Z.logor x Z.one in
+    if est_premier x then x else essai ()
+  in
+  essai ()
