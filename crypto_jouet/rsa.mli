@@ -29,3 +29,12 @@ val chiffrer : cle_publique -> Z.t -> Z.t
 
 val dechiffrer : cle_privee -> Z.t -> Z.t
 (** [dechiffrer priv c] renvoie [c^d mod n]. *)
+
+(** {1 Texte} *)
+
+val encoder : string -> Z.t
+(** [encoder s] transforme une chaîne en entier (octets en base 256).
+    Exemple : [encoder "Hi" = 18537]. *)
+
+val decoder : Z.t -> string
+(** [decoder x] est l'inverse de [encoder]. *)

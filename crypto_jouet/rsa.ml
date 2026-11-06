@@ -26,3 +26,17 @@ let chiffrer (pub : cle_publique) (m : Z.t) : Z.t =
 
 let dechiffrer (priv : cle_privee) (c : Z.t) : Z.t =
   Arith.pow_mod c priv.d priv.pub.n
+
+  let encoder (s : string) : Z.t =
+  String.fold_left
+    (fun acc c -> Z.add (Z.mul acc (Z.of_int 256)) (Z.of_int (Char.code c)))
+    Z.zero s
+
+let decoder (x : Z.t) : string =
+  let rec go x acc =
+    if Z.equal x Z.zero then acc
+    else
+      let (q, r) = Z.ediv_rem x (Z.of_int 256) in
+      go q (String.make 1 (Char.chr (Z.to_int r)) ^ acc)
+  in
+  go x ""

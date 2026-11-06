@@ -33,5 +33,15 @@ let run () =
      | _ -> false
      | exception Invalid_argument _ -> true);
 
+  (* Texte *)
+  check "encoder \"Hi\" = 18537" (Z.equal (Rsa.encoder "Hi") (z 18537));
+  check "decoder 18537 = \"Hi\"" (Rsa.decoder (z 18537) = "Hi");
+  check "decoder (encoder s) = s" (Rsa.decoder (Rsa.encoder "Bonjour") = "Bonjour");
+  let m = Rsa.encoder "Bonjour" in
+  let c = Rsa.chiffrer pub m in
+  check "chiffrer puis dechiffrer \"Bonjour\""
+    (Rsa.decoder (Rsa.dechiffrer priv c) = "Bonjour");
+
+  (* Bilan : toujours en dernier *)
   if !echecs > 0 then (Printf.printf "%d echec(s)\n" !echecs; exit 1)
   else print_string "Tous les tests RSA passent.\n"
