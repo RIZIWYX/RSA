@@ -1,6 +1,6 @@
 # Algèbre effective et RSA pédagogique en OCaml
 
-![CI](https://github.com/RIZIWYX/algebre-effective/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/RIZIWYX/RSA/actions/workflows/ci.yml/badge.svg)](https://github.com/RIZIWYX/RSA/actions/workflows/ci.yml)
 
 Bibliothèque OCaml d'**arithmétique exacte** (entiers et rationnels de Gauss, polynômes rationnels), étendue en **projet de cryptographie pédagogique** : un RSA jouet écrit à partir de zéro, destiné à être attaqué sur de petites clés.
 
